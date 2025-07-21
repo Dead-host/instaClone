@@ -48,7 +48,7 @@ class _UserprofileState extends State<Userprofile> {
       body: Column(
         children: [
           Padding(
-            padding: const EdgeInsets.only(left: 40,right: 20,top: 30),
+            padding: const EdgeInsets.only(left: 40,right: 20,top: 10),
             child: Row(
               children: [
                 Text(

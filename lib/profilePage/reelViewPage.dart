@@ -81,8 +81,6 @@ class _ReelviewpageState extends State<Reelviewpage> {
                           ],
                         ),
                       ),
-
-
                       Positioned(
                         bottom: 0,
                         child: Padding(
