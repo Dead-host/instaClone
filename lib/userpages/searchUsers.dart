@@ -2,6 +2,7 @@ import 'dart:developer';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:insta_clone/searchedUsers/searchedUserProfilePage.dart';
 
 class Searchusers extends StatefulWidget {
   const Searchusers({super.key});
@@ -63,7 +64,9 @@ class _SearchusersState extends State<Searchusers> {
             child: Row(
               children: [
                 IconButton(onPressed: (){
-                }, icon: Icon(Icons.arrow_back,color: Colors.white,)),
+                  Navigator.pop(context);
+                },
+                    icon: Icon(Icons.arrow_back,color: Colors.white,)),
                 Expanded(
                   flex: 3,
                   child: TextFormField(
@@ -94,26 +97,46 @@ class _SearchusersState extends State<Searchusers> {
               ],
             ),
           ),
+          SizedBox(height: 20,),
           Expanded(
+
             child: ListView.builder(
                 itemCount: users.length,
                 itemBuilder: (context,index){
                   final data = users[index] as Map<String,dynamic>;
-                  return ListTile(
-                    leading: CircleAvatar(
-                      radius: 10,
-                      backgroundImage: AssetImage('assets/default.png'),
-                    ),
-                    title: Text(
-                      data['user_name'],
-                      style: TextStyle(
-                        color: Colors.white
+                  return Padding(
+                    padding: const EdgeInsets.only(left: 40,bottom: 20),
+                    child: ListTile(
+                      onTap: (){
+                        Navigator.push(context, MaterialPageRoute(builder: (context)=>Searcheduserprofilepage(user: data)));
+                      },
+                      leading: CircleAvatar(
+                        radius: 25,
+                        backgroundImage: AssetImage('assets/default.png'),
+                      ),
+                      title: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            data['user_name'],
+                            style: TextStyle(
+                              color: Colors.white
+                            ),
+                          ),Text(
+                            data['name'],
+                            style: TextStyle(
+                              color: Colors.white70,
+                              fontSize: 10,
+                            ),
+                          ),
+                        ],
                       ),
                     ),
                   );
                 },
             ),
           ),
+
 
         ],
       ),
