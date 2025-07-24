@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
 class Viewreelofthisuser extends StatefulWidget {
@@ -14,6 +15,41 @@ class Viewreelofthisuser extends StatefulWidget {
 class _ViewreelofthisuserState extends State<Viewreelofthisuser> {
 
   String? uid;
+  final currentUser = FirebaseAuth.instance.currentUser!;
+
+
+  Future<void> toggleLike(String postId, String ownerUid) async {
+
+    final uid = FirebaseAuth.instance.currentUser!.uid;
+    final postRef = FirebaseFirestore.instance.collection('reels').doc(postId);
+    final userPostRef = FirebaseFirestore.instance
+        .collection('users')
+        .doc(ownerUid)
+        .collection('reels')
+        .doc(postId);
+
+    final snapshot = await postRef.get();
+
+    final List likes = snapshot.data()?['likes'] ?? [];
+
+    final isLiked = likes.contains(uid);
+
+    if (isLiked) {
+      await postRef.update({
+        'likes': FieldValue.arrayRemove([uid])
+      });
+      await userPostRef.update({
+        'likes': FieldValue.arrayRemove([uid])
+      });
+    } else {
+      await postRef.update({
+        'likes': FieldValue.arrayUnion([uid])
+      });
+      await userPostRef.update({
+        'likes': FieldValue.arrayUnion([uid])
+      });
+    }
+  }
 
   @override
   void initState() {
@@ -119,7 +155,25 @@ class _ViewreelofthisuserState extends State<Viewreelofthisuser> {
                                       child: Column(
 
                                         children: [
-                                          IconButton(onPressed: (){}, icon: Icon(Icons.favorite_border,color: Colors.white,)),
+                                          IconButton(
+                                              onPressed: (){
+                                                toggleLike(data['postId'], data['uid']);
+                                              },
+                                              icon: Icon(
+                                                data['likes'] != null && data['likes'].contains(currentUser.uid)
+                                                    ? Icons.favorite
+                                                    : Icons.favorite_border,
+                                                color: data['likes'] != null && data['likes'].contains(currentUser.uid)
+                                                    ? Colors.red
+                                                    : Colors.white,
+                                              )
+                                          ),
+                                          Text(
+                                            data['likes'].length.toString(),
+                                            style: TextStyle(
+                                              color: Colors.white,
+                                              fontSize: 15,
+                                            ),),
                                           IconButton(onPressed: (){}, icon: Icon(Icons.comment,color: Colors.white,)),
                                           IconButton(onPressed: (){}, icon: Icon(Icons.share,color: Colors.white,)),
                                           IconButton(onPressed: (){}, icon: Icon(Icons.more_vert,color: Colors.white,)),

@@ -64,7 +64,6 @@ class _HomepageState extends State<Homepage> {
               icon: Icon(Icons.person_outline,size: 30,),
               label: ''
           ),
-
         ],
       ),
     ));

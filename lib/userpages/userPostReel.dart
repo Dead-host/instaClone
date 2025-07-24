@@ -44,6 +44,7 @@ class _UserpostreelState extends State<Userpostreel> {
         'hasTag':hasTags.text,
         'postId':postId,
         'user_name':userName,
+        'uid':userId,
         'likes':[],
         'comments':[
           {

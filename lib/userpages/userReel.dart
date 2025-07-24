@@ -23,7 +23,7 @@ class _UserreelState extends State<Userreel> {
     final userPostRef = FirebaseFirestore.instance
         .collection('users')
         .doc(ownerUid)
-        .collection('posts')
+        .collection('reels')
         .doc(postId);
 
     final snapshot = await postRef.get();

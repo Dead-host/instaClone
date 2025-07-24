@@ -16,6 +16,41 @@ class _PostsviewpageState extends State<Postsviewpage> {
   FirebaseAuth  auth = FirebaseAuth.instance;
   String? uid;
   String? name;
+  final currentUser = FirebaseAuth.instance.currentUser!;
+
+
+  Future<void> toggleLike(String postId, String ownerUid) async {
+
+    final uid = FirebaseAuth.instance.currentUser!.uid;
+    final postRef = FirebaseFirestore.instance.collection('posts').doc(postId);
+    final userPostRef = FirebaseFirestore.instance
+        .collection('users')
+        .doc(ownerUid)
+        .collection('posts')
+        .doc(postId);
+
+    final snapshot = await postRef.get();
+
+    final List likes = snapshot.data()?['likes'] ?? [];
+
+    final isLiked = likes.contains(uid);
+
+    if (isLiked) {
+      await postRef.update({
+        'likes': FieldValue.arrayRemove([uid])
+      });
+      await userPostRef.update({
+        'likes': FieldValue.arrayRemove([uid])
+      });
+    } else {
+      await postRef.update({
+        'likes': FieldValue.arrayUnion([uid])
+      });
+      await userPostRef.update({
+        'likes': FieldValue.arrayUnion([uid])
+      });
+    }
+  }
 
   @override
   void initState() {
@@ -106,9 +141,33 @@ class _PostsviewpageState extends State<Postsviewpage> {
                         children: [
                           Row(
                             children: [
-                              IconButton(onPressed: (){}, icon: Icon(Icons.favorite_border,color: Colors.white,)),
-                              IconButton(onPressed: (){}, icon: Icon(Icons.comment,color: Colors.white,)),
-                              IconButton(onPressed: (){}, icon: Icon(Icons.share,color: Colors.white,)),
+                              IconButton(
+                                  onPressed: (){
+                                    toggleLike(data['postId'], data['uid']);
+                                  },
+                                  icon: Icon(
+                                    data['likes'] != null && data['likes'].contains(currentUser.uid)
+                                        ? Icons.favorite
+                                        : Icons.favorite_border,
+                                    color: data['likes'] != null && data['likes'].contains(currentUser.uid)
+                                        ? Colors.red
+                                        : Colors.white,
+                                  )
+                              ),
+                              Text(
+                                data['likes'].length.toString(),
+                                style: TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 15,
+                                ),),
+                              IconButton(
+                                  onPressed: (){},
+                                  icon: Icon(Icons.comment,color: Colors.white,)
+                              ),
+                              IconButton(
+                                  onPressed: (){},
+                                  icon: Icon(Icons.share,color: Colors.white,)
+                              ),
                             ],
                           ),
                           IconButton(onPressed: (){}, icon: Icon(Icons.save_alt,color: Colors.white,)),

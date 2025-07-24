@@ -60,6 +60,7 @@ class _UserpostState extends State<Userpost> {
         ],
         'shares':0,
         'postId':postId,
+        'uid':userId,
       });
       updatePost();
     }catch(e){
