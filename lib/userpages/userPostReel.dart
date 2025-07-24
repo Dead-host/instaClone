@@ -26,6 +26,7 @@ class _UserpostreelState extends State<Userpostreel> {
   String? userName;
   String? userId;
   int? posts;
+  String postId="";
 
 
 
@@ -37,12 +38,31 @@ class _UserpostreelState extends State<Userpostreel> {
       await getUser();
       final User? user = _auth.currentUser;
       final uid = user!.uid;
-      await _firestore.collection('users').doc(uid).collection('reels').add({
+      await _firestore.collection('users').doc(uid).collection('reels').doc(postId).set({
         'description': description.text,
         'image': base64Image,
         'hasTag':hasTags.text,
+        'postId':postId,
         'user_name':userName,
-      });
+        'likes':[],
+        'comments':[
+          {
+            'users':{
+              "id":"",
+              "name":"",
+            },
+            "comment":[
+              {
+                "comment":"",
+                "time":"",
+                "like":0,
+              }
+            ]
+          }
+        ],
+        'shares':0,
+      },
+      );
       updatePost();
     }catch(e){
       print(e);
@@ -51,6 +71,7 @@ class _UserpostreelState extends State<Userpostreel> {
 
   Future<void> getUser()async{
     try{
+      postId=DateTime.now().millisecondsSinceEpoch.toString();
       final User? user = _auth.currentUser;
       final uid=user!.uid;
       DocumentSnapshot data = await _firestore.collection('users').doc(uid).get();
@@ -79,14 +100,34 @@ class _UserpostreelState extends State<Userpostreel> {
   Future<void> postItem()async{
     try{
       await getUser();
-      await FirebaseFirestore.instance.collection('reels').add({
+
+      await FirebaseFirestore.instance.collection('reels').doc(postId).set({
+
+        'postId':postId,
         'description': description.text,
-        'image': base64Image,
         'hasTag':hasTags.text,
+        'image': base64Image,
         'user':{
           'user_name':userName,
           'uid':userId,
-        }
+        },
+        'likes':[],
+        'comments':[
+          {
+            'users':{
+              "id":"",
+              "name":"",
+            },
+            "comment":[
+              {
+                "comment":"",
+                "time":"",
+                "like":0,
+              }
+            ]
+          }
+        ],
+        'shares':0,
       });
       Navigator.pushReplacement(context, MaterialPageRoute(builder: (context)=>Homepage()));
       Fluttertoast.showToast(
@@ -99,6 +140,8 @@ class _UserpostreelState extends State<Userpostreel> {
       print("Erroe: $e");
     }
   }
+
+
   Future<void> pickImage(ImageSource source)async{
     final picker = ImagePicker();
     final pickedFile = await picker.pickImage(source: source,imageQuality: 80);

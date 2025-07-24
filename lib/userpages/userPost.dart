@@ -26,6 +26,7 @@ class _UserpostState extends State<Userpost> {
   String? userName;
   String? userId;
   int? posts;
+  String postId="";
 
 
 
@@ -37,10 +38,28 @@ class _UserpostState extends State<Userpost> {
       await getUser();
       final User? user = _auth.currentUser;
       final uid = user!.uid;
-      await _firestore.collection('users').doc(uid).collection('posts').add({
+      await _firestore.collection('users').doc(uid).collection('posts').doc(postId).set({
         'description': description.text,
         'image': base64Image,
         'user_name':userName,
+        'likes':[],
+        'comments':[
+          {
+            'users':{
+              "id":"",
+              "name":"",
+            },
+            "comment":[
+              {
+                "comment":"",
+                "time":"",
+                "like":0,
+              }
+            ]
+          }
+        ],
+        'shares':0,
+        'postId':postId,
       });
       updatePost();
     }catch(e){
@@ -50,6 +69,7 @@ class _UserpostState extends State<Userpost> {
 
   Future<void> getUser()async{
     try{
+      postId=DateTime.now().millisecondsSinceEpoch.toString();
       final User? user = _auth.currentUser;
       final uid=user!.uid;
       DocumentSnapshot data = await _firestore.collection('users').doc(uid).get();
@@ -79,13 +99,33 @@ class _UserpostState extends State<Userpost> {
   Future<void> postItem()async{
     try{
      await getUser();
-      await FirebaseFirestore.instance.collection('posts').add({
+
+      await FirebaseFirestore.instance.collection('posts').doc(postId).set({
+
+        'postId':postId,
         'description': description.text,
         'image': base64Image,
         'user':{
           'user_name':userName,
           'uid':userId,
-        }
+        },
+        'likes':[],
+        'comments':[
+          {
+            'users':{
+              "id":"",
+              "name":"",
+            },
+            "comment":[
+              {
+                "comment":"",
+                "time":"",
+                "like":0,
+              }
+            ]
+          }
+        ],
+        'shares':0,
       });
       Navigator.pushReplacement(context, MaterialPageRoute(builder: (context)=>Homepage()));
       Fluttertoast.showToast(

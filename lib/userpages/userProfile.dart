@@ -19,6 +19,9 @@ class _UserprofileState extends State<Userprofile> {
   FirebaseFirestore firestore = FirebaseFirestore.instance;
   String? userName;
   String? fullName;
+  int? post;
+  int? followers;
+  int? following;
 
 
   Future<void> getUser()async{
@@ -29,7 +32,9 @@ class _UserprofileState extends State<Userprofile> {
       setState(() {
         userName=data.get('user_name');
         fullName=data.get('name');
-
+        post=data.get('post');
+        followers=data.get('followers');
+        following=data.get('following');
       });
     }catch(e){print(e);}
   }
@@ -99,7 +104,7 @@ class _UserprofileState extends State<Userprofile> {
                                 crossAxisAlignment:CrossAxisAlignment.start,
                                 children: [
                                   Text(
-                                      "0",
+                                      post.toString(),
                                     style: TextStyle(
                                       color: Colors.white,
                                       fontWeight: FontWeight.bold,
@@ -120,7 +125,7 @@ class _UserprofileState extends State<Userprofile> {
                                 crossAxisAlignment:CrossAxisAlignment.start,
                                 children: [
                                   Text(
-                                      "0",
+                                      followers.toString(),
                                     style: TextStyle(
                                       color: Colors.white,
                                       fontWeight: FontWeight.bold,
@@ -141,7 +146,7 @@ class _UserprofileState extends State<Userprofile> {
                                 crossAxisAlignment:CrossAxisAlignment.start,
                                 children: [
                                   Text(
-                                      "0",
+                                      following.toString(),
                                     style: TextStyle(
                                       color: Colors.white,
                                       fontWeight: FontWeight.bold,
