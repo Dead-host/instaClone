@@ -15,6 +15,185 @@ class _UserreelState extends State<Userreel> {
 
   final currentUser = FirebaseAuth.instance.currentUser!;
 
+  Future<void> addComment({required String postId, required String ownerUid, required String commentText,}) async {
+    final user = FirebaseAuth.instance.currentUser!;
+    final uid = user.uid;
+    final userDoc = await FirebaseFirestore.instance.collection('users').doc(uid).get();
+    final userName = userDoc.data()?['user_name'] ?? 'Anonymous';
+
+
+    final newCommentBlock = {
+      'users': {
+        'id': uid,
+        'name': userName,
+      },
+      'comment': [
+        {
+          'comment': commentText,
+          'time': DateTime.now().toIso8601String(),
+          'like': 0,
+        }
+      ]
+    };
+
+    final postRefGlobal = FirebaseFirestore.instance.collection('reels').doc(postId);
+    final postRefUser = FirebaseFirestore.instance
+        .collection('users')
+        .doc(ownerUid)
+        .collection('reels')
+        .doc(postId);
+
+    await postRefGlobal.update({
+      'comments': FieldValue.arrayUnion([newCommentBlock])
+    });
+
+    await postRefUser.update({
+      'comments': FieldValue.arrayUnion([newCommentBlock])
+    });
+  }
+
+  void showCommentSheet({required String postId, required String ownerUid, }) {
+    final TextEditingController _commentController = TextEditingController();
+
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.black,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      builder: (context) {
+        return Padding(
+          padding: EdgeInsets.only(
+            bottom: MediaQuery.of(context).viewInsets.bottom,
+            top: 16,
+            left: 16,
+            right: 16,
+          ),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              // Post Preview
+              Row(
+                children: [
+                  Text(
+                    "Comments",
+                    style: TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold),
+                  )
+                ],
+              ),
+              SizedBox(height: 10),
+
+              FutureBuilder<DocumentSnapshot>(
+                future: FirebaseFirestore.instance.collection('reels').doc(postId).get(),
+                builder: (context, snapshot) {
+                  if (!snapshot.hasData) {
+                    return Center(child: CircularProgressIndicator());
+                  }
+
+                  final data = snapshot.data!.data() as Map<String, dynamic>;
+                  final comments = data['comments'] as List<dynamic>? ?? [];
+
+                  List<Widget> commentWidgets = [];
+
+                  for (var userComment in comments) {
+                    final userName = userComment['users']['name'] ?? "Unknown";
+                    final commentList = userComment['comment'] as List<dynamic>;
+
+                    for (var c in commentList) {
+                      commentWidgets.add(
+                        Padding(
+                          padding: const EdgeInsets.symmetric(vertical: 6),
+                          child: Row(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Icon(Icons.account_circle, color: Colors.white, size: 28),
+                              SizedBox(width: 8),
+                              Expanded(
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    RichText(
+                                      text: TextSpan(
+                                        text: "$userName ",
+                                        style: TextStyle(
+                                          color: Colors.white,
+                                          fontWeight: FontWeight.bold,
+                                        ),
+                                        children: [
+                                          TextSpan(
+                                            text: c['comment'] ?? '',
+                                            style: TextStyle(
+                                              color: Colors.white,
+                                              fontWeight: FontWeight.normal,
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                    SizedBox(height: 2),
+                                  ],
+                                ),
+                              )
+                            ],
+                          ),
+                        ),
+                      );
+                    }
+                  }
+
+                  return Container(
+                    height: 300,
+                    child: ListView(
+                      shrinkWrap: true,
+                      children: commentWidgets,
+                    ),
+                  );
+                },
+              ),
+
+              Divider(color: Colors.white24),
+
+              // Add Comment Field
+              Row(
+                children: [
+                  Expanded(
+                    child: TextField(
+                      controller: _commentController,
+                      style: TextStyle(color: Colors.white),
+                      decoration: InputDecoration(
+                        hintText: 'Add a comment...',
+                        hintStyle: TextStyle(color: Colors.white54),
+                        border: InputBorder.none,
+                      ),
+                    ),
+                  ),
+                  IconButton(
+                    icon: Icon(Icons.send, color: Colors.blue),
+                    onPressed: () async {
+                      final text = _commentController.text.trim();
+                      if (text.isNotEmpty) {
+                        await addComment(
+                          postId: postId,
+                          ownerUid: ownerUid,
+                          commentText: text,
+                        );
+                        Navigator.pop(context); // Close sheet
+                        showCommentSheet( // Re-open to refresh comments
+                          postId: postId,
+                          ownerUid: ownerUid,
+                        );
+                      }
+                    },
+                  ),
+                ],
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
 
   Future<void> toggleLike(String postId, String ownerUid) async {
 
@@ -161,7 +340,15 @@ class _UserreelState extends State<Userreel> {
                                               color: Colors.white,
                                               fontSize: 15,
                                             ),),
-                                          IconButton(onPressed: (){}, icon: Icon(Icons.comment,color: Colors.white,)),
+                                          IconButton(
+                                            onPressed: () {
+                                              showCommentSheet(
+                                                postId: data['postId'],
+                                                ownerUid: data['user']['uid'],
+                                              );
+                                            },
+                                            icon: Icon(Icons.comment, color: Colors.white),
+                                          ),
                                           IconButton(onPressed: (){}, icon: Icon(Icons.share,color: Colors.white,)),
                                           IconButton(onPressed: (){}, icon: Icon(Icons.more_vert,color: Colors.white,)),
                                         ],
