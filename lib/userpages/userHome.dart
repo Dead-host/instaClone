@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:insta_clone/messages.dart';
 import 'package:insta_clone/searchedUsers/searchedUserProfilePage.dart';
 import 'package:readmore/readmore.dart';
 
@@ -257,7 +258,12 @@ class _UserhomeState extends State<Userhome> {
                     icon: Icon(Icons.favorite_border),
                     color: Colors.white,
                   ),
-                  Image.asset('assets/message.jpg',height: 50,),
+                  GestureDetector(
+                    onTap: (){
+                      Navigator.push(context, MaterialPageRoute(builder: (context)=>Messages()));
+                    },
+                      child: Image.asset('assets/message.jpg',height: 50,)
+                  ),
                 ],
               ),
             ),
