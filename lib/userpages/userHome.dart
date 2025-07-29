@@ -3,7 +3,7 @@ import 'dart:convert';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:insta_clone/messages.dart';
+import 'package:insta_clone/messagess/messages.dart';
 import 'package:insta_clone/searchedUsers/searchedUserProfilePage.dart';
 import 'package:readmore/readmore.dart';
 
@@ -196,9 +196,7 @@ class _UserhomeState extends State<Userhome> {
     );
   }
 
-
   final currentUser = FirebaseAuth.instance.currentUser!;
-
 
   Future<void> toggleLike(String postId, String ownerUid) async {
 
@@ -232,9 +230,6 @@ class _UserhomeState extends State<Userhome> {
       });
     }
   }
-
-
-
 
   @override
   Widget build(BuildContext context) {

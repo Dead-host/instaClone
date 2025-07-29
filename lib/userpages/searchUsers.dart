@@ -122,7 +122,8 @@ class _SearchusersState extends State<Searchusers> {
                             style: TextStyle(
                               color: Colors.white
                             ),
-                          ),Text(
+                          ),
+                          Text(
                             data['name'],
                             style: TextStyle(
                               color: Colors.white70,
