@@ -229,6 +229,12 @@ class _SignuppageState extends State<Signuppage> {
                 onPressed: (){
                   registerUse();
                   Navigator.push(context, MaterialPageRoute(builder: (context)=>Homepage()));
+                  userNameController.clear();
+                  emailController.clear();
+                  passwordController.clear();
+                  confirmPasswordController.clear();
+                  phoneController.clear();
+                  fullNameController.clear();
                 },
                 child: Text(
                   "Register",

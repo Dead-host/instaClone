@@ -34,6 +34,8 @@ class _LoginpageState extends State<Loginpage> {
       if(user!=null) {
         Navigator.push(context, MaterialPageRoute(builder: (context)=>Homepage()));
       }
+      userNameController.clear();
+      passwordController.clear();
 
 
     }catch (e, stacktrace) {

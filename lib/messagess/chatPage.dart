@@ -97,7 +97,7 @@ class _ChatpageState extends State<Chatpage> {
                           padding: EdgeInsets.all(10),
                           decoration: BoxDecoration(
                             color: isMe ? Colors.purple : Colors.grey[800],
-                            borderRadius: BorderRadius.circular(12),
+                            borderRadius: BorderRadius.circular(20),
                           ),
                           child: Text(
                             data['message'],
