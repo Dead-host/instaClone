@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:insta_clone/messagess/chatPage.dart';
 import 'package:insta_clone/messagess/requestPage.dart';
 
 class Messages extends StatefulWidget {
@@ -132,7 +133,8 @@ class _MessagesState extends State<Messages> {
                     itemCount: docs.length,
                   itemBuilder: (context,index){
                       final data= docs[index].data() as Map<String,dynamic>;
-                      return Padding(
+                      return auth.currentUser!.uid != data['uid']
+                          ? Padding(
                         padding: const EdgeInsets.only(bottom: 30),
                         child: ListTile(
                           leading: CircleAvatar(
@@ -144,15 +146,20 @@ class _MessagesState extends State<Messages> {
                             children: [
                               Text(
                                 data['user_name'],
-                                style: TextStyle(
-                                  color: Colors.white,
-                                ),
+                                style: TextStyle(color: Colors.white),
                               ),
-                              SizedBox(height: 25,)
+                              SizedBox(height: 25),
                             ],
                           ),
+                          onTap: (){
+                            Navigator.push(context, MaterialPageRoute(builder: (context)=>Chatpage(
+                              receiverUserName: data['user_name'],
+                              receiverUserID: data['uid'],
+                              receiverName: data['name'],
+                            )));
+                          },
                         ),
-                      );
+                      ) : SizedBox(height: 0,);
                   },
                 );
               },
