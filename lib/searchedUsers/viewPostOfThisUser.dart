@@ -339,19 +339,27 @@ class _ViewpostofthisuserState extends State<Viewpostofthisuser> {
                                   color: Colors.white,
                                   fontSize: 15,
                                 ),),
-                              IconButton(
-                                onPressed: () {
-                                  showCommentSheet(
-                                    postId: data['postId'],
-                                    ownerUid: data['uid'],
-                                  );
-                                },
-                                icon: Icon(Icons.comment, color: Colors.white),
+                              Padding(
+                                padding: const EdgeInsets.only(left: 10),
+                                child: GestureDetector(
+                                  child: Image.asset('assets/comment.png',height: 40,),
+                                  onTap: (){
+                                    showCommentSheet(
+                                      postId: data['postId'],
+                                      ownerUid: data['uid'],
+                                    );
+                                  },
+                                ),
                               ),
-                              IconButton(onPressed: (){}, icon: Icon(Icons.share,color: Colors.white,)),
+                              Padding(
+                                padding: const EdgeInsets.only(left: 10),
+                                child: GestureDetector(
+                                  child: Image.asset('assets/share.png',height: 35,),
+                                ),
+                              ),
                             ],
                           ),
-                          IconButton(onPressed: (){}, icon: Icon(Icons.save_alt,color: Colors.white,)),
+                          Image.asset('assets/save.png',height:25,),
                         ],
                       ),
                     ),

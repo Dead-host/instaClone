@@ -235,7 +235,7 @@ class _SignuppageState extends State<Signuppage> {
                   confirmPasswordController.clear();
                   phoneController.clear();
                   fullNameController.clear();
-                },
+                },  
                 child: Text(
                   "Register",
                   style: TextStyle(color: Colors.white),
