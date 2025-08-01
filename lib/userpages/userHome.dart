@@ -155,7 +155,6 @@ class _UserhomeState extends State<Userhome> {
 
               Divider(color: Colors.white24),
 
-              // Add Comment Field
               Row(
                 children: [
                   Expanded(
@@ -179,8 +178,8 @@ class _UserhomeState extends State<Userhome> {
                           ownerUid: ownerUid,
                           commentText: text,
                         );
-                        Navigator.pop(context); // Close sheet
-                        showCommentSheet( // Re-open to refresh comments
+                        Navigator.pop(context);
+                        showCommentSheet(
                           postId: postId,
                           ownerUid: ownerUid,
                         );

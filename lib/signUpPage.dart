@@ -45,12 +45,20 @@ class _SignuppageState extends State<Signuppage> {
           'following':0,
           'post':0,
         });
+
+        userNameController.clear();
+        emailController.clear();
+        passwordController.clear();
+        confirmPasswordController.clear();
+        phoneController.clear();
+        fullNameController.clear();
         Fluttertoast.showToast(
           msg: "Registered user successfully",
           toastLength: Toast.LENGTH_SHORT,
           backgroundColor: Colors.green,
           textColor: Colors.white,
         );
+        Navigator.push(context, MaterialPageRoute(builder: (context)=>Homepage()));
       }
 
     }catch(e,stacktrace){
@@ -228,13 +236,7 @@ class _SignuppageState extends State<Signuppage> {
                 ),
                 onPressed: (){
                   registerUse();
-                  Navigator.push(context, MaterialPageRoute(builder: (context)=>Homepage()));
-                  userNameController.clear();
-                  emailController.clear();
-                  passwordController.clear();
-                  confirmPasswordController.clear();
-                  phoneController.clear();
-                  fullNameController.clear();
+
                 },  
                 child: Text(
                   "Register",
