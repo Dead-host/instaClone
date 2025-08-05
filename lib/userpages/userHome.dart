@@ -5,6 +5,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:insta_clone/messagess/messages.dart';
 import 'package:insta_clone/searchedUsers/searchedUserProfilePage.dart';
+import 'package:insta_clone/userpages/postStory.dart';
 import 'package:readmore/readmore.dart';
 
 class Userhome extends StatefulWidget {
@@ -280,7 +281,9 @@ class _UserhomeState extends State<Userhome> {
                         bottom: 0,
                         right: 0,
                         child: GestureDetector(
-                          onTap: (){},
+                          onTap: (){
+                            Navigator.push(context, MaterialPageRoute(builder: (context)=>Poststory()));
+                          },
                           child: Container(
                             decoration: BoxDecoration(
                               shape:BoxShape.circle,

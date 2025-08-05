@@ -240,18 +240,23 @@ class _UserpostState extends State<Userpost> {
       body: SingleChildScrollView(
         child: Column(
           children: [
-            if(base64Image!=null)
-            Container(
-              color: Colors.white,
-              height: 551,
-              width: MediaQuery.of(context).size.width,
-              child: Column(
-                children: [
-                  Image.memory(base64Decode(base64Image!))
-                ],
+            if (base64Image != null)
+              Container(
+                height: MediaQuery.of(context).size.height * 0.7,
+                width: double.infinity,
+                margin: EdgeInsets.all(10),
+                decoration: BoxDecoration(
+                  color: Colors.black,
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(12),
+                  child: Image.memory(
+                    base64Decode(base64Image!),
+                    fit: BoxFit.cover,
+                  ),
+                ),
               ),
-
-            ),
             SizedBox(height: 50,),
             Container(
               color: Colors.white10,
