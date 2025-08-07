@@ -25,6 +25,7 @@ class _ViewstorypageState extends State<Viewstorypage> {
     // TODO: implement initState
     super.initState();
     pageController =PageController(initialPage: widget.initialIndex);
+    startAutoPlay();
   }
 
   void startAutoPlay() {
