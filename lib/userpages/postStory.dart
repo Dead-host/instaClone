@@ -73,6 +73,7 @@ class PoststoryState extends State<Poststory> {
         'storyId': storyId,
         'image': base64Image,
         'timestamp': timestamp,
+        'user_name': userName,
       };
 
       final storyDoc = _firestore.collection('stories').doc(uid);
@@ -85,15 +86,16 @@ class PoststoryState extends State<Poststory> {
       },SetOptions(merge: true));
 
       log(base64Image!);
-      Fluttertoast.showToast(msg: "Story posted");
+      Fluttertoast.showToast(
+          msg: "Story posted",
+        backgroundColor: Colors.green,
+      );
       Navigator.pushReplacement(context, MaterialPageRoute(builder: (_) => Homepage()));
 
     } catch (e) {
       print("Error: $e");
     }
   }
-
-
 
   @override
   Widget build(BuildContext context) {

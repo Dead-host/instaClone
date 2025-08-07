@@ -1,0 +1,125 @@
+import 'dart:async';
+import 'dart:convert';
+
+import 'package:flutter/material.dart';
+
+class Viewstorypage extends StatefulWidget {
+
+  final List<dynamic> stories;
+  final int initialIndex;
+
+  const Viewstorypage({super.key,required this.stories,this.initialIndex=0});
+
+  @override
+  State<Viewstorypage> createState() => _ViewstorypageState();
+}
+
+class _ViewstorypageState extends State<Viewstorypage> {
+
+  late PageController pageController;
+  int currentIndex = 0;
+  Timer? timer;
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    pageController =PageController(initialPage: widget.initialIndex);
+  }
+
+  void startAutoPlay() {
+    timer?.cancel();
+    timer = Timer.periodic(Duration(seconds: 5), (_) {
+      if (currentIndex < widget.stories.length - 1) {
+          pageController.nextPage(
+            duration: Duration(milliseconds: 300), curve: Curves.easeIn);
+      } else {
+        Navigator.pop(context);
+      }
+    });
+  }
+
+  void _onTapDown (TapDownDetails details) {
+    final screenWidth = MediaQuery.of(context).size.width;
+    final tapX = details.localPosition.dx;
+
+    if(tapX<screenWidth/2){
+      if(currentIndex>0){
+        pageController.previousPage(duration: Duration(milliseconds: 300), curve: Curves.easeIn);
+      }
+    }
+    else{
+      if(currentIndex<widget.stories.length-1){
+        pageController.nextPage(duration: Duration(milliseconds: 300), curve: Curves.easeIn);
+      }else{
+        Navigator.pop(context);
+      }
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return SafeArea(child: Scaffold(
+      backgroundColor: Colors.black,
+      body: GestureDetector(
+        onTapDown: _onTapDown,
+        child: Stack(
+          children: [
+            PageView.builder(
+                controller: pageController,
+              onPageChanged: (index){
+                  setState(() {
+                    currentIndex=index;
+                  });
+                  startAutoPlay();
+              },
+              itemBuilder: (context,index){
+                  final story = widget.stories[index];
+                  final image = story['image'];
+                  return Center(
+                    child: image!=null && image!=""?Image.memory(
+                        base64Decode(image),
+                      fit: BoxFit.cover,
+                      width: MediaQuery.of(context).size.width,
+                      height: MediaQuery.of(context).size.height,
+                    ):SizedBox(),
+                  );
+              },
+            ),
+            Positioned(
+                top: 20,
+                left: 10,
+                right: 10,
+                child: Row(
+                  children: [
+                    Row(
+                      children: [
+                        CircleAvatar(
+                          radius: 20,
+                          backgroundImage: AssetImage('assets/default.png'),
+                        ),
+                        SizedBox(width: 10,),
+                        Text(
+                          widget.stories[currentIndex]['user_name'],
+                          style: TextStyle(
+                            color: Colors.white,
+                          ),
+                        )
+                      ],
+                    ),
+                    Spacer(),
+                    IconButton(
+                        onPressed: (){
+                          Navigator.pop(context);
+                        },
+                        icon: Icon(Icons.close,size: 30,color: Colors.white,)
+                    )
+                  ],
+                )
+            )
+          ],
+        )
+      ),
+    ));
+  }
+}

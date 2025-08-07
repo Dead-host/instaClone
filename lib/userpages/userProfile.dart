@@ -20,8 +20,8 @@ class _UserprofileState extends State<Userprofile> {
   String? userName;
   String? fullName;
   int? post;
-  int? followers;
-  int? following;
+  List followers=[];
+  List following=[];
 
 
   Future<void> getUser()async{
@@ -125,7 +125,7 @@ class _UserprofileState extends State<Userprofile> {
                                 crossAxisAlignment:CrossAxisAlignment.start,
                                 children: [
                                   Text(
-                                      followers.toString(),
+                                      followers.isEmpty?"0":followers!.length.toString(),
                                     style: TextStyle(
                                       color: Colors.white,
                                       fontWeight: FontWeight.bold,
@@ -146,7 +146,7 @@ class _UserprofileState extends State<Userprofile> {
                                 crossAxisAlignment:CrossAxisAlignment.start,
                                 children: [
                                   Text(
-                                      following.toString(),
+                                      following.isEmpty?"0":following!.length.toString(),
                                     style: TextStyle(
                                       color: Colors.white,
                                       fontWeight: FontWeight.bold,

@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:insta_clone/messagess/messages.dart';
 import 'package:insta_clone/searchedUsers/searchedUserProfilePage.dart';
 import 'package:insta_clone/userpages/postStory.dart';
+import 'package:insta_clone/userpages/viewStoryPage.dart';
 import 'package:readmore/readmore.dart';
 
 class Userhome extends StatefulWidget {
@@ -264,44 +265,115 @@ class _UserhomeState extends State<Userhome> {
             ),
             SizedBox(height: 40,),
             //story
-            Padding(
-              padding: const EdgeInsets.only(left: 20),
-              child: Row(
+            SizedBox(
+              height: 100,
+              child: ListView(
+                scrollDirection: Axis.horizontal,
                 children: [
-                  Stack(
-                    children: [
-                      Center(
-                        child: CircleAvatar(
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 10),
+                    child: Stack(
+                      children: [
+                        CircleAvatar(
                           radius: 35,
                           backgroundImage: AssetImage('assets/default.png'),
-        
                         ),
-                      ),
-                      Positioned(
-                        bottom: 0,
-                        right: 0,
-                        child: GestureDetector(
-                          onTap: (){
-                            Navigator.push(context, MaterialPageRoute(builder: (context)=>Poststory()));
-                          },
-                          child: Container(
-                            decoration: BoxDecoration(
-                              shape:BoxShape.circle,
-                              color: Colors.white,
-                              border:Border.all(color: Colors.grey),
+                        Positioned(
+                          bottom: 30,
+                          right: 0,
+                          child: GestureDetector(
+                            onTap: () {
+                              Navigator.push(context,
+                                  MaterialPageRoute(builder: (context) => Poststory()));
+                            },
+                            child: Container(
+                              decoration: BoxDecoration(
+                                shape: BoxShape.circle,
+                                color: Colors.white,
+                                border: Border.all(color: Colors.grey),
+                              ),
+                              padding: EdgeInsets.all(4),
+                              child: Icon(Icons.add, size: 10),
                             ),
-                            padding: EdgeInsets.all(4),
-                            child: Icon(Icons.add,size: 10,),
                           ),
                         ),
-                      ),
-                    ],
+                      ],
+                    ),
                   ),
-                  //here the stack of stories are stored
+                  StreamBuilder<QuerySnapshot>(
+                    stream: FirebaseFirestore.instance.collection('stories').snapshots(),
+                    builder: (context, snapshot) {
+                      if (snapshot.hasError) {
+                        return Center(child: Text('Something went wrong'));
+                      }
+
+                      if (snapshot.connectionState == ConnectionState.waiting) {
+                        return Center(child: CircularProgressIndicator());
+                      }
+
+                      final docs = snapshot.data!.docs;
+
+                      return Row(
+                        children: docs.map((doc) {
+                          final data = doc.data() as Map<String, dynamic>;
+                          final List stories = data['stories'] ?? [];
+                          if (stories.isEmpty) return SizedBox();
+
+                          final userName = data['user_name'];
+
+                          return Padding(
+                            padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                            child: Column(
+                              children: [
+                                GestureDetector(
+                                  onTap: () async {
+                                    final storySnapshot = await FirebaseFirestore.instance.collection('stories').get();
+
+                                    List<Map<String,dynamic>> allStories=[];
+                                    int startIndex=0;
+                                    int counter=0;
+
+                                    for(var doc in storySnapshot.docs){
+                                      final userData = doc.data() as Map<String,dynamic>;
+                                      final userName = userData['user_name'];
+                                      final List<dynamic> userStories= userData['stories']??[];
+
+                                      for(var story in userStories){
+                                        allStories.add({
+                                          ...story,
+                                          'user_name':userName,
+                                        });
+
+                                        if(userName==data['user_name']&& story==userStories.first){
+                                          startIndex=counter;
+                                        }
+                                        counter++;
+                                      }
+                                    }
+                                    Navigator.push(context, MaterialPageRoute(builder: (context)=>Viewstorypage(stories: allStories,initialIndex: startIndex, )));
+                                  },
+                                  child: CircleAvatar(
+                                    radius: 35,
+                                    backgroundImage: AssetImage('assets/default.png'),
+                                  ),
+                                ),
+                                SizedBox(height: 5),
+                                Text(
+                                  userName,
+                                  style: TextStyle(color: Colors.white, fontSize: 15),
+                                ),
+                              ],
+                            ),
+                          );
+                        }).toList(),
+                      );
+                    },
+                  ),
                 ],
               ),
             ),
-            SizedBox(height: 40,),
+            SizedBox(height: 20,),
+            //posts
             StreamBuilder<QuerySnapshot>(
                 stream: FirebaseFirestore.instance.collection('posts').snapshots(),
                 builder: (context,snapshot){
@@ -417,7 +489,10 @@ class _UserhomeState extends State<Userhome> {
 
                                     ],
                                   ),
-                                  Image.asset('assets/save.png',height:25,),
+                                  IconButton(
+                                      onPressed: (){},
+                                      icon: Icon(Icons.bookmark_border_outlined,color: Colors.white,size: 25,)
+                                  ),
                                 ],
                               ),
                             ),

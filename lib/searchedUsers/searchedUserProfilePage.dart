@@ -92,7 +92,7 @@ class _SearcheduserprofilepageState extends State<Searcheduserprofilepage> {
                                 crossAxisAlignment:CrossAxisAlignment.start,
                                 children: [
                                   Text(
-                                    widget.user['followers'].toString(),
+                                    widget.user['followers'].isEmpty?"0":widget.user['followers'].length.toString(),
                                     style: TextStyle(
                                       color: Colors.white,
                                       fontWeight: FontWeight.bold,
@@ -113,7 +113,7 @@ class _SearcheduserprofilepageState extends State<Searcheduserprofilepage> {
                                 crossAxisAlignment:CrossAxisAlignment.start,
                                 children: [
                                   Text(
-                                    widget.user['following'].toString(),
+                                    widget.user['following'].isEmpty?"0":widget.user['following'].length.toString(),
                                     style: TextStyle(
                                       color: Colors.white,
                                       fontWeight: FontWeight.bold,

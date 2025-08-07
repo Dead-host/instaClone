@@ -41,8 +41,8 @@ class _SignuppageState extends State<Signuppage> {
           'name':fullNameController.text,
           'user_name':userNameController.text,
           'phone': phoneController.text,
-          'followers':0,
-          'following':0,
+          'followers':[],
+          'following':[],
           'post':0,
         });
 
