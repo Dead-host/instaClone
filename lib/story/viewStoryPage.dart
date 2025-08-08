@@ -3,6 +3,8 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 
+import 'package:percent_indicator/flutter_percent_indicator.dart';
+
 class Viewstorypage extends StatefulWidget {
 
   final List<dynamic> stories;
@@ -87,6 +89,47 @@ class _ViewstorypageState extends State<Viewstorypage> {
                   );
               },
             ),
+            Positioned(
+              top: 10,
+              left: 10,
+              right: 10,
+              child: Row(
+                children: List.generate(widget.stories.length, (index) {
+                  return Expanded(
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 2.0),
+                      child: index == currentIndex
+                          ? TweenAnimationBuilder<double>(
+                        tween: Tween(begin: 0.0, end: 1.0),
+                        duration: Duration(seconds: 5),
+                        onEnd: () {
+                          if (currentIndex < widget.stories.length - 1) {
+                            pageController.nextPage(
+                                duration: Duration(milliseconds: 300),
+                                curve: Curves.easeIn);
+                          } else {
+                            Navigator.pop(context);
+                          }
+                        },
+                        builder: (context, value, child) {
+                          return LinearProgressIndicator(
+                            value: value,
+                            backgroundColor: Colors.white30,
+                            valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                          );
+                        },
+                      )
+                          : LinearProgressIndicator(
+                        value: index < currentIndex ? 1.0 : 0.0,
+                        backgroundColor: Colors.white30,
+                        valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                      ),
+                    ),
+                  );
+                }),
+              ),
+            ),
+
             Positioned(
                 top: 20,
                 left: 10,

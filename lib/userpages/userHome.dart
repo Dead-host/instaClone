@@ -5,8 +5,8 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:insta_clone/messagess/messages.dart';
 import 'package:insta_clone/searchedUsers/searchedUserProfilePage.dart';
-import 'package:insta_clone/userpages/postStory.dart';
-import 'package:insta_clone/userpages/viewStoryPage.dart';
+import 'package:insta_clone/story/postStory.dart';
+import 'package:insta_clone/story/viewStoryPage.dart';
 import 'package:readmore/readmore.dart';
 
 class Userhome extends StatefulWidget {
