@@ -386,6 +386,7 @@ class _UserhomeState extends State<Userhome> {
                   }
             
                   final docs= snapshot.data!.docs;
+
             
                   return GridView.builder(
                     shrinkWrap: true,
@@ -435,10 +436,10 @@ class _UserhomeState extends State<Userhome> {
                                     ? Padding(
                                       padding: const EdgeInsets.all(8.0),
                                       child: Image.memory(
-                                                                        base64Decode(data['image'],),
-                                                                        width: MediaQuery.of(context).size.width,
-                                                                        fit: BoxFit.fitWidth,
-                                                                      ),
+                                        base64Decode(data['image'],),
+                                        width: MediaQuery.of(context).size.width,
+                                        fit: BoxFit.fitWidth,
+                                      ),
                                     ):Icon(Icons.image),
                             ),
                             SizedBox(height: 10,),

@@ -89,6 +89,7 @@ class _ViewstorypageState extends State<Viewstorypage> {
                   );
               },
             ),
+            //progress bar
             Positioned(
               top: 10,
               left: 10,
@@ -129,7 +130,7 @@ class _ViewstorypageState extends State<Viewstorypage> {
                 }),
               ),
             ),
-
+            //username and userdp and close button
             Positioned(
                 top: 20,
                 left: 10,
