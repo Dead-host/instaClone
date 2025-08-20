@@ -247,7 +247,7 @@ class _UserhomeState extends State<Userhome> {
                     image: AssetImage('assets/logo.jpeg'),
                     height: 50,
                   ),
-        
+
                   Spacer(),
                   IconButton(
                     onPressed: (){},
@@ -304,22 +304,34 @@ class _UserhomeState extends State<Userhome> {
                     stream: FirebaseFirestore.instance.collection('stories').snapshots(),
                     builder: (context, snapshot) {
                       if (snapshot.hasError) {
-                        return Center(child: Text('Something went wrong'));
+                        return const SizedBox(); // don’t block UI
                       }
 
-                      if (snapshot.connectionState == ConnectionState.waiting) {
-                        return Center(child: CircularProgressIndicator());
+                      if (!snapshot.hasData || snapshot.connectionState == ConnectionState.waiting) {
+                        return const Center(child: CircularProgressIndicator());
                       }
 
                       final docs = snapshot.data!.docs;
 
                       return Row(
                         children: docs.map((doc) {
-                          final data = doc.data() as Map<String, dynamic>;
-                          final List stories = data['stories'] ?? [];
-                          if (stories.isEmpty) return SizedBox();
+                          final data = doc.data() as Map<String, dynamic>? ?? {};
+                          final List<dynamic> stories = data['stories'] ?? [];
 
-                          final userName = data['user_name'];
+                          // ✅ Filter fresh stories only
+                          final now = DateTime.now();
+                          final freshStories = stories.where((story) {
+                            if (story['timestamp'] == null) return false;
+                            final ts = story['timestamp'];
+                            if (ts is! Timestamp) return false; // prevent cast errors
+                            final storyTime = ts.toDate();
+                            return now.difference(storyTime).inHours < 24;
+                          }).toList();
+
+                          // If no valid stories, skip this user
+                          if (freshStories.isEmpty) return const SizedBox();
+
+                          final userName = data['user_name'] ?? "Unknown";
 
                           return Padding(
                             padding: const EdgeInsets.symmetric(horizontal: 8.0),
@@ -327,40 +339,25 @@ class _UserhomeState extends State<Userhome> {
                               children: [
                                 GestureDetector(
                                   onTap: () async {
-                                    final storySnapshot = await FirebaseFirestore.instance.collection('stories').get();
-
-                                    List<Map<String,dynamic>> allStories=[];
-                                    int startIndex=0;
-                                    int counter=0;
-
-                                    for(var doc in storySnapshot.docs){
-                                      final userData = doc.data() as Map<String,dynamic>;
-                                      final userName = userData['user_name'];
-                                      final List<dynamic> userStories= userData['stories']??[];
-
-                                      for(var story in userStories){
-                                        allStories.add({
-                                          ...story,
-                                          'user_name':userName,
-                                        });
-
-                                        if(userName==data['user_name']&& story==userStories.first){
-                                          startIndex=counter;
-                                        }
-                                        counter++;
-                                      }
-                                    }
-                                    Navigator.push(context, MaterialPageRoute(builder: (context)=>Viewstorypage(stories: allStories,initialIndex: startIndex, )));
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (context) => Viewstorypage(
+                                          stories: freshStories,
+                                          initialIndex: 0, // start with first story
+                                        ),
+                                      ),
+                                    );
                                   },
                                   child: CircleAvatar(
                                     radius: 35,
                                     backgroundImage: AssetImage('assets/default.png'),
                                   ),
                                 ),
-                                SizedBox(height: 5),
+                                const SizedBox(height: 5),
                                 Text(
                                   userName,
-                                  style: TextStyle(color: Colors.white, fontSize: 15),
+                                  style: const TextStyle(color: Colors.white, fontSize: 15),
                                 ),
                               ],
                             ),
@@ -380,14 +377,14 @@ class _UserhomeState extends State<Userhome> {
                   if (snapshot.hasError) {
                     return const Center(child: Text('Something went wrong'));
                   }
-            
+
                   if (snapshot.connectionState == ConnectionState.waiting) {
                     return const Center(child: CircularProgressIndicator());
                   }
-            
+
                   final docs= snapshot.data!.docs;
 
-            
+
                   return GridView.builder(
                     shrinkWrap: true,
                     physics: NeverScrollableScrollPhysics(),
@@ -399,7 +396,7 @@ class _UserhomeState extends State<Userhome> {
                     itemCount: docs.length,
                     itemBuilder: (context,index){
                       final data = docs[index].data()as Map<String,dynamic>;
-            
+
                       return Container(
                         height: 500,
                         width: MediaQuery.of(context).size.width,
@@ -527,7 +524,7 @@ class _UserhomeState extends State<Userhome> {
                       );
                     },
                   );
-            
+
                 },
             )
           ],

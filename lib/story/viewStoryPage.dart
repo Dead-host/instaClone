@@ -21,6 +21,7 @@ class _ViewstorypageState extends State<Viewstorypage> {
   late PageController pageController;
   int currentIndex = 0;
   Timer? timer;
+  DateTime? time;
 
   @override
   void initState() {
@@ -41,6 +42,7 @@ class _ViewstorypageState extends State<Viewstorypage> {
       }
     });
   }
+
 
   void _onTapDown (TapDownDetails details) {
     final screenWidth = MediaQuery.of(context).size.width;
